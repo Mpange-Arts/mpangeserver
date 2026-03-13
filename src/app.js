@@ -3,7 +3,7 @@ const cors       = require("cors");
 const helmet     = require("helmet");
 const morgan     = require("morgan");
 const rateLimit  = require("express-rate-limit");
-const blogRoutes = require('./routes/blog.routes');
+const blogRoutes    = require('./routes/blog.routes');
 const contactRoutes = require('./routes/contact.routes');
 
 const app = express();
@@ -15,7 +15,12 @@ app.use(rateLimit({
   message: { success: false, message: "Too many requests, please try again later." },
 }));
 app.use(cors({
-  origin: [process.env.CLIENT_URL, process.env.ADMIN_URL],
+  origin: [
+    process.env.CLIENT_URL,
+    process.env.ADMIN_URL,
+    'https://mpange.netlify.app',
+    'http://localhost:3000',
+  ],
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));
