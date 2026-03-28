@@ -7,9 +7,8 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-  
 
-// ── Enums ─────────────────────────────────────────────────
+// ── Enums ─────────────────────────────────────────────────────
 enum Role {
   USER
   ADMIN
@@ -26,7 +25,7 @@ enum NotificationStatus {
   FAILED
 }
 
-// ── User ──────────────────────────────────────────────────
+// ── User ──────────────────────────────────────────────────────
 model User {
   id           String    @id @default(uuid())
   name         String    @db.VarChar(60)
@@ -42,13 +41,14 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  // ← all 3 reverse relations must be here
   products      Product[]
   notifications Notification[] @relation("SentBy")
   blogs         Blog[]
+
+  @@map("users")
 }
 
-// ── Product (also used for Projects) ─────────────────────
+// ── Product (used for Projects) ───────────────────────────────
 model Product {
   id          String   @id @default(uuid())
   title       String   @db.VarChar(120)
@@ -62,13 +62,14 @@ model Product {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  createdBy User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String @map("user_id")
+  createdBy User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String         @map("user_id")
   images    ProductImage[]
 
   @@map("products")
 }
 
+// ── Product Image ─────────────────────────────────────────────
 model ProductImage {
   id        String  @id @default(uuid())
   url       String
@@ -79,7 +80,7 @@ model ProductImage {
   @@map("product_images")
 }
 
-// ── Notification ──────────────────────────────────────────
+// ── Notification ──────────────────────────────────────────────
 model Notification {
   id           String               @id @default(uuid())
   title        String               @db.VarChar(100)
@@ -97,7 +98,7 @@ model Notification {
   @@map("notifications")
 }
 
-// ── Site Content ──────────────────────────────────────────
+// ── Site Content ──────────────────────────────────────────────
 model SiteContent {
   id        String   @id @default(uuid())
   section   String   @unique
@@ -107,7 +108,7 @@ model SiteContent {
   @@map("site_content")
 }
 
-// ── Blog ─────────────────────────────────────────────────
+// ── Blog ──────────────────────────────────────────────────────
 model Blog {
   id          String   @id @default(cuid())
   title       String   @db.VarChar(200)
@@ -122,19 +123,21 @@ model Blog {
   updatedAt   DateTime @updatedAt @map("updated_at")
   authorId    String   @map("author_id")
   author      User     @relation(fields: [authorId], references: [id])
+
+  @@map("blogs")
 }
 
-// ── Contact Inquiry ───────────────────────────────────────
+// ── Contact Inquiry ───────────────────────────────────────────
 model ContactInquiry {
   id          String   @id @default(cuid())
   name        String   @db.VarChar(120)
   email       String   @db.VarChar(255)
   phone       String?  @db.VarChar(30)
-  projectType String?  @db.VarChar(80)  @map("project_type")
+  projectType String?  @db.VarChar(80) @map("project_type")
   budget      String?  @db.VarChar(40)
   brief       String
-  isRead      Boolean  @default(false)  @map("is_read")
-  createdAt   DateTime @default(now())  @map("created_at")
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("contact_inquiries")
 }

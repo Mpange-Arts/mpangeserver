@@ -1,7 +1,7 @@
-const express       = require('express');
-const router        = express.Router();
-const { protect }   = require('../middleware/auth');
-const { adminOnly } = require('../middleware/adminAuth');
+const express        = require('express');
+const router         = express.Router();
+const { protect }    = require('../middleware/auth');
+const { adminOnly }  = require('../middleware/adminAuth');
 const { uploadBlog } = require('../middleware/upload');
 const {
   getPublishedBlogs,
@@ -13,15 +13,15 @@ const {
   adminTogglePublish,
 } = require('../controllers/blog.controller');
 
-// Public
-router.get('/',      getPublishedBlogs);
-router.get('/:slug', getBlogBySlug);
-
-// Admin
-router.get(   '/admin/all',              protect, adminOnly, adminGetAllBlogs);
-router.post(  '/admin',                  protect, adminOnly, uploadBlog.single('image'), adminCreateBlog);
-router.put(   '/admin/:id',              protect, adminOnly, uploadBlog.single('image'), adminUpdateBlog);
-router.delete('/admin/:id',              protect, adminOnly, adminDeleteBlog);
+// ── Admin routes MUST come before /:slug wildcard ──────────────
+router.get(   '/admin/all',                protect, adminOnly, adminGetAllBlogs);
+router.post(  '/admin',                    protect, adminOnly, uploadBlog.single('image'), adminCreateBlog);
+router.put(   '/admin/:id',                protect, adminOnly, uploadBlog.single('image'), adminUpdateBlog);
+router.delete('/admin/:id',                protect, adminOnly, adminDeleteBlog);
 router.put(   '/admin/:id/toggle-publish', protect, adminOnly, adminTogglePublish);
+
+// ── Public routes ──────────────────────────────────────────────
+router.get('/',        getPublishedBlogs);
+router.get('/:slug',   getBlogBySlug);
 
 module.exports = router;
