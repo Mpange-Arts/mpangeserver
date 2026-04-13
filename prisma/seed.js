@@ -1,8 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+const { prisma, connectDB } = require("../src/config/db");
 const bcrypt = require("bcryptjs");
-const prisma = new PrismaClient();
 
 async function main() {
+  // Connect to database (will use PRIMARY, fallback to FALLBACK if needed)
+  await connectDB();
+
   // ── Admin user ─────────────────────────────────────────
   const hashedPassword = await bcrypt.hash("Mpange2026", 12);
   const admin = await prisma.user.upsert({
@@ -288,4 +290,4 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => await prisma.$disconnect());
